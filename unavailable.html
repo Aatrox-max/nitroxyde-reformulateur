@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bientôt Disponible - Nitroxyde</title>
     <style>
-        /* Tout le CSS est identique à index.html */
+        /* Tout le CSS est identique pour l'harmonie du site */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; overflow-x: hidden; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
@@ -16,11 +16,14 @@
         .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
         .logo { font-size: 24px; font-weight: 800; background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-transform: uppercase; letter-spacing: 2px; }
         .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: #ffffff; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+        .nav-links a { color: #ffffff; text-decoration: none; font-weight: 500; transition: all 0.3s ease; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: linear-gradient(45deg, #ff006e, #8338ec); transition: width 0.3s ease; }
+        .nav-links a:hover::after { width: 100%; }
         main { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 20px; }
         .hero h1 { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; margin-bottom: 20px; }
         .hero p { font-size: 1.2rem; color: #b3b3b3; margin-bottom: 40px; max-width: 600px; }
         .cta-button { display: inline-block; padding: 15px 40px; background: linear-gradient(45deg, #ff006e, #8338ec); color: #ffffff; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; }
+        @media (max-width: 768px) { .nav-links { display: none; } }
     </style>
 </head>
 <body>
@@ -29,10 +32,10 @@
         <div class="header-content">
             <div class="logo">Nitroxyde</div>
             <nav class="nav-links">
-                <a href="index.html">Accueil</a>
-                <a href="unavailable.html">Fonctionnalités</a>
-                <a href="index.html#demo">Démo</a>
-                <a href="contact.html">Contact</a>
+                <a href="/">Accueil</a>
+                <a href="/unavailable">Fonctionnalités</a>
+                <a href="/#demo">Démo</a>
+                <a href="/contact">Contact</a>
             </nav>
         </div>
     </header>
@@ -40,7 +43,7 @@
         <section class="hero">
             <h1>Bientôt Disponible... 🚧</h1>
             <p>Nous travaillons d'arrache-pied pour vous proposer cette fonctionnalité. Merci pour votre patience, revenez bientôt !</p>
-            <a href="index.html" class="cta-button">Retour à l'Accueil</a>
+            <a href="/" class="cta-button">Retour à l'Accueil</a>
         </section>
     </main>
 </body>
