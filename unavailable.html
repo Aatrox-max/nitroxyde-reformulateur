@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bientôt Disponible - Nitroxyde</title>
+    <link rel="icon" href="/logo.png" type="image/png">
     <style>
-        /* Tout le CSS est identique pour l'harmonie du site */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; overflow-x: hidden; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
@@ -24,26 +24,15 @@
         .hero p { font-size: 1.2rem; color: #b3b3b3; margin-bottom: 40px; max-width: 600px; }
         .cta-button { display: inline-block; padding: 15px 40px; background: linear-gradient(45deg, #ff006e, #8338ec); color: #ffffff; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; }
         @media (max-width: 768px) { .nav-links { display: none; } }
-
-        /* --- NOUVEAU STYLE POUR LE LOGO IMAGE --- */
-.logo-link {
-    display: flex;
-    align-items: center;
-}
-
-.logo-image {
-    height: 40px; /* Ajuste cette valeur si tu veux le logo plus grand ou plus petit */
-    width: auto;
-}
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
     <header>
         <div class="header-content">
-            <a href="/" class="logo-link">
-    <img src="logo.png" alt="Logo Nitroxyde" class="logo-image">
-</a>
+            <a href="/" style="text-decoration: none;">
+                <div class="logo">Nitroxyde</div>
+            </a>
             <nav class="nav-links">
                 <a href="/">Accueil</a>
                 <a href="/unavailable">Fonctionnalités</a>

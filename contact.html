@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - Nitroxyde</title>
+    <link rel="icon" href="/logo.png" type="image/png">
     <style>
-        /* Tout le CSS est identique à index.html */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; overflow-x: hidden; line-height: 1.6; }
@@ -19,10 +19,9 @@
         .nav-links a { color: #ffffff; text-decoration: none; font-weight: 500; transition: all 0.3s ease; position: relative; }
         .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: linear-gradient(45deg, #ff006e, #8338ec); transition: width 0.3s ease; }
         .nav-links a:hover::after { width: 100%; }
-        main { padding-top: 100px; position: relative; z-index: 10; }
+        main { padding-top: 100px; position: relative; z-index: 10; padding-bottom: 50px; }
         footer { background: rgba(255, 255, 255, 0.02); padding: 50px 0; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1); }
         .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        /* Style du formulaire et de la page */
         .contact-section { padding: 100px 0; }
         .contact-content { max-width: 800px; margin: 0 auto; padding: 0 20px; text-align: center; }
         .contact-content h1 { font-size: 3rem; margin-bottom: 20px; }
@@ -36,32 +35,21 @@
         .submit-button { background: linear-gradient(45deg, #ff006e, #8338ec); color: #ffffff; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 1.1rem; width: 100%; }
         .submit-button:hover { transform: translateY(-2px); }
         #form-status { margin-top: 20px; text-align: center; font-weight: 500; }
-
-        /* --- NOUVEAU STYLE POUR LE LOGO IMAGE --- */
-.logo-link {
-    display: flex;
-    align-items: center;
-}
-
-.logo-image {
-    height: 40px; /* Ajuste cette valeur si tu veux le logo plus grand ou plus petit */
-    width: auto;
-}
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
     <header>
         <div class="header-content">
-            <a href="/" class="logo-link">
-    <img src="logo.png" alt="Logo Nitroxyde" class="logo-image">
-</a>
+            <a href="/" style="text-decoration: none;">
+                <div class="logo">Nitroxyde</div>
+            </a>
             <nav class="nav-links">
-    <a href="/">Accueil</a>
-    <a href="/unavailable">Fonctionnalités</a>
-    <a href="/#demo">Démo</a>
-    <a href="/contact">Contact</a>
-</nav>
+                <a href="/">Accueil</a>
+                <a href="/unavailable">Fonctionnalités</a>
+                <a href="/#demo">Démo</a>
+                <a href="/contact">Contact</a>
+            </nav>
         </div>
     </header>
     <main>
@@ -92,7 +80,7 @@
             </div>
         </section>
     </main>
-    <footer>
+    <footer id="contact-footer">
         <div class="footer-content">
             <p>&copy; 2025 Nitroxyde. Tous droits réservés.</p>
         </div>
@@ -101,42 +89,19 @@
         const contactForm = document.getElementById('contactForm');
         const submitBtn = document.getElementById('submitBtn');
         const formStatus = document.getElementById('form-status');
-
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Envoi en cours...';
-            formStatus.textContent = '';
-
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value,
-            };
-
-            try {
-                const response = await fetch('/api/send-contact', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData),
-                });
-
-                if (response.ok) {
-                    formStatus.textContent = 'Message envoyé avec succès ! Merci.';
-                    formStatus.style.color = '#06ffa5';
-                    contactForm.reset();
-                } else {
-                    throw new Error('Erreur lors de l\'envoi.');
-                }
-            } catch (error) {
-                formStatus.textContent = 'Une erreur est survenue. Veuillez réessayer.';
-                formStatus.style.color = '#ff006e';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Envoyer le Message';
-            }
-        });
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Envoi en cours...';
+                formStatus.textContent = '';
+                const formData = { name: document.getElementById('name').value, email: document.getElementById('email').value, subject: document.getElementById('subject').value, message: document.getElementById('message').value };
+                try {
+                    const response = await fetch('/api/send-contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+                    if (response.ok) { formStatus.textContent = 'Message envoyé avec succès ! Merci.'; formStatus.style.color = '#06ffa5'; contactForm.reset(); } else { throw new Error('Erreur lors de l\'envoi.'); }
+                } catch (error) { formStatus.textContent = 'Une erreur est survenue. Veuillez réessayer.'; formStatus.style.color = '#ff006e'; } finally { submitBtn.disabled = false; submitBtn.textContent = 'Envoyer le Message'; }
+            });
+        }
     </script>
 </body>
 </html>
