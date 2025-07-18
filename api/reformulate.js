@@ -4,7 +4,11 @@ export default async function handler(request, response) {
     const { text, tone } = request.body;
     const groqApiKey = process.env.GROQ_API_KEY; // La clé secrète !
 
-    const prompt = `Reformule l'email suivant pour qu'il soit plus ${tone}. Ne renvoie que le texte reformulé, sans aucune introduction ou phrase supplémentaire : "${text}"`;
+// Ancien prompt (un peu trop simple) :
+// const prompt = `Reformule l'email suivant pour qu'il soit plus ${tone}. Ne renvoie que le texte reformulé...`;
+
+// NOUVEAU PROMPT (beaucoup plus directif) :
+const prompt = `Agis comme un expert en communication. Réécris COMPLÈTEMENT le texte suivant pour le rendre plus ${tone}. Tu dois changer la structure des phrases, enrichir le vocabulaire et améliorer l'impact général. Ne te contente pas de corriger les fautes. Voici le texte à transformer : "${text}"`;
 
     try {
         const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
