@@ -3,7 +3,7 @@ export default async function handler(request, response) {
     const groqApiKey = process.env.GROQ_API_KEY;
 
     // Prompt amélioré pour forcer une réécriture plus profonde
-    const prompt = `Agis comme un expert en communication. Réécris COMPLÈTEMENT le texte suivant pour le rendre plus ${tone}. Tu dois changer la structure des phrases, enrichir le vocabulaire et améliorer l'impact général. Ne te contente pas de corriger les fautes. Voici le texte à transformer : "${text}"`;
+    const prompt = `Agis comme un expert en communication. Réécris COMPLÈTEMENT le texte suivant pour le rendre plus ${tone}. Tu dois changer la structure des phrases, enrichir le vocabulaire et améliorer l'impact général. Ne te contente pas de corriger les fautes, adapte toi à la langue qu'utilise l'utilisateur. Voici le texte à transformer : "${text}"`;
 
     if (!groqApiKey) {
         return response.status(500).json({ error: 'La clé API de Groq n\'est pas configurée.' });
