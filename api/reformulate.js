@@ -1,14 +1,16 @@
-// This is a Vercel Serverless Function
 export default async function handler(request, response) {
-    // On récupère le texte et le ton envoyés depuis le site
     const { text, tone } = request.body;
-    const groqApiKey = process.env.GROQ_API_KEY; // La clé secrète !
+    const groqApiKey = process.env.GROQ_API_KEY;
 
-// Ancien prompt (un peu trop simple) :
-// const prompt = `Reformule l'email suivant pour qu'il soit plus ${tone}. Ne renvoie que le texte reformulé...`;
+    // Prompt amélioré pour forcer une réécriture plus profonde
+    const prompt = `Agis comme un expert en communication. Réécris COMPLÈTEMENT le texte suivant pour le rendre plus ${tone}. Tu dois changer la structure des phrases, enrichir le vocabulaire et améliorer l'impact général. Ne te contente pas de corriger les fautes. Voici le texte à transformer : "${text}"`;
 
-// NOUVEAU PROMPT (beaucoup plus directif) :
-const prompt = `Agis comme un expert en communication. Réécris COMPLÈTEMENT le texte suivant pour le rendre plus ${tone}. Tu dois changer la structure des phrases, enrichir le vocabulaire et améliorer l'impact général. Ne te contente pas de corriger les fautes. Voici le texte à transformer : "${text}"`;
+    if (!groqApiKey) {
+        return response.status(500).json({ error: 'La clé API de Groq n\'est pas configurée.' });
+    }
+    if (!text) {
+        return response.status(400).json({ error: 'Le champ de texte est vide.' });
+    }
 
     try {
         const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -19,17 +21,24 @@ const prompt = `Agis comme un expert en communication. Réécris COMPLÈTEMENT l
             },
             body: JSON.stringify({
                 messages: [{ role: 'user', content: prompt }],
-                model: 'llama3-8b-8192' // Un modèle rapide et efficace
+                model: 'llama3-8b-8192',
+                temperature: 0.75 // Paramètre pour plus de créativité
             })
         });
+
+        if (!groqResponse.ok) {
+            const errorBody = await groqResponse.text();
+            console.error('Erreur de l\'API Groq:', errorBody);
+            return response.status(groqResponse.status).json({ error: 'L\'API de reformulation a retourné une erreur.' });
+        }
 
         const data = await groqResponse.json();
         const reformulatedText = data.choices[0]?.message?.content;
         
-        // On renvoie le résultat au site
         response.status(200).json({ result: reformulatedText });
 
     } catch (error) {
-        response.status(500).json({ error: 'Une erreur est survenue.' });
+        console.error('Erreur interne du serveur:', error);
+        response.status(500).json({ error: 'Une erreur interne est survenue.' });
     }
 }
