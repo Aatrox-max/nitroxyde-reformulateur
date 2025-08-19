@@ -22,7 +22,7 @@ export default async function handler(request, response) {
             body: JSON.stringify({
                 messages: [{ role: 'user', content: prompt }],
                 model: 'llama3-8b-8192',
-                temperature: 0.75 // Paramètre pour plus de créativité
+                temperature: 0.75 
             })
         });
 

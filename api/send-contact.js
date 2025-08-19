@@ -10,16 +10,11 @@ export default async function handler(request, response) {
     try {
         // Envoi de l'email via Resend
         const { data, error } = await resend.emails.send({
-            // L'adresse email qui apparaît comme expéditeur (doit être sur un domaine vérifié)
             from: 'Contact Nitroxyde <contact@nitroxyde.fr>', 
             
-            // L'adresse email où TU veux recevoir les messages
-            to: ['aarondenoeux@gmail.com'], // <-- !! METS TON ADRESSE ICI !!
+            to: ['aarondenoeux@gmail.com'], 
 
-            // Le sujet de l'email que tu recevras
             subject: `Nouveau message de ${name} : ${subject}`,
-            
-            // Le corps de l'email que tu recevras
             html: `
                 <p>Vous avez reçu un nouveau message depuis le formulaire de contact de nitroxyde.fr.</p>
                 <p><strong>Nom :</strong> ${name}</p>
