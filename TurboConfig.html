@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nitroxyde - TurboConfig</title>
+    <link rel="icon" href="/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- THÈME DE BASE NITROXYDE --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        :root { --nitro-pink: #ff006e; --nitro-purple: #8338ec; --nitro-blue: #3a86ff; --nitro-cyan: #06ffa5; --nitro-glass-bg: rgba(255, 255, 255, 0.05); --nitro-border-color: rgba(255, 255, 255, 0.1); --nitro-text-muted: #b3b3b3; --nitro-error: #ff4757; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; overflow-x: hidden; line-height: 1.6; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
+        .bg-animation::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 80%, var(--nitro-pink) 0%, transparent 40%), radial-gradient(circle at 80% 20%, var(--nitro-purple) 0%, transparent 40%), radial-gradient(circle at 50% 50%, var(--nitro-blue) 0%, transparent 40%); animation: gradientPulse 12s ease-in-out infinite; opacity: 0.3; }
+        @keyframes gradientPulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.1); opacity: 0.5; } }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .particle { position: absolute; width: 2px; height: 2px; background: #ffffff; border-radius: 50%; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); opacity: 0; } 50% { transform: translateY(-150px); opacity: 1; } }
+        header { position: fixed; top: 0; left: 0; width: 100%; padding: 20px 0; backdrop-filter: blur(10px); background: rgba(10, 10, 10, 0.8); z-index: 1000; border-bottom: 1px solid var(--nitro-border-color); }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .logo { font-size: 24px; font-weight: 800; background: linear-gradient(45deg, var(--nitro-pink), var(--nitro-purple), var(--nitro-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #ffffff; text-decoration: none; font-weight: 500; transition: all 0.3s ease; position: relative; }
+        .nav-links a.active { color: #ffffff; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: linear-gradient(45deg, var(--nitro-pink), var(--nitro-purple)); transition: width 0.3s ease; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        main { padding-top: 120px; position: relative; z-index: 10; padding-bottom: 50px; }
+        footer { background: rgba(255, 255, 255, 0.02); padding: 50px 0; text-align: center; border-top: 1px solid var(--nitro-border-color); }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- STYLES SPÉCIFIQUES AU CONFIGURATEUR --- */
+        .presentation { text-align: center; margin-bottom: 40px; padding: 0 20px; }
+        .presentation h2 { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; color: #fff; }
+        .presentation p { font-size: 1.1rem; color: var(--nitro-text-muted); max-width: 700px; margin: 0 auto; }
+        .configurator-section, .config-summary, .compatibility-check-section { margin-bottom: 35px; padding: 25px 30px; background: var(--nitro-glass-bg); border: 1px solid var(--nitro-border-color); border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0, 0.2); backdrop-filter: blur(10px); width: 100%; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .configurator-section h2, .config-summary h3 { font-family: 'Orbitron', sans-serif; font-weight: 700; background: linear-gradient(45deg, var(--nitro-pink), var(--nitro-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.8em; margin-bottom: 25px; text-align: left; padding-bottom: 10px; border-bottom: 2px solid var(--nitro-border-color); display: block; }
+        .configurator-section h2 i { margin-right: 12px; font-size: 0.9em; }
+        .component-selector-area { display: flex; flex-wrap: wrap; gap: 25px; align-items: flex-start; }
+        .component-select-wrapper { flex: 2; min-width: 300px; }
+        
+        /* --- MENU DÉROULANT PERSONNALISÉ --- */
+        select.component-select { display: none; } /* On cache l'ancien select */
+        .custom-select-container { position: relative; width: 100%; z-index: 5; }
+        .custom-select-container.open { z-index: 10; }
+        .custom-select-display { width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid var(--nitro-border-color); background-color: rgba(10, 10, 10, 0.8); color: #ffffff; font-family: 'Inter', sans-serif; font-size: 1em; cursor: pointer; transition: border-color 0.3s ease; display: flex; justify-content: space-between; align-items: center; }
+        .custom-select-display:hover { border-color: var(--nitro-purple); }
+        .custom-select-display::after { content: '▼'; font-size: 0.8em; color: var(--nitro-text-muted); transition: transform 0.3s ease; }
+        .custom-select-container.open .custom-select-display { border-color: var(--nitro-pink); }
+        .custom-select-container.open .custom-select-display::after { transform: rotate(180deg); }
+        .custom-select-options { position: absolute; top: 105%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: #1a1a24; border: 1px solid var(--nitro-border-color); border-radius: 8px; z-index: 15; display: none; padding: 5px; }
+        .custom-select-container.open .custom-select-options { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .custom-select-search { width: calc(100% - 10px); margin: 5px; padding: 8px 12px; background: #0a0a0a; border: 1px solid var(--nitro-border-color); border-radius: 6px; color: #fff; }
+        .custom-select-option { padding: 10px 15px; cursor: pointer; transition: background-color 0.2s ease; border-radius: 4px; margin: 2px 5px; }
+        .custom-select-option:hover, .custom-select-option.highlighted { background-color: rgba(255, 255, 255, 0.1); }
+        .custom-select-option.hidden { display: none; }
+        .custom-select-optgroup { font-weight: bold; color: var(--nitro-cyan); padding: 10px 15px; margin-top: 5px; border-top: 1px solid var(--nitro-border-color); text-transform: uppercase; font-size: 0.9em; }
+
+        .selected-component-preview { flex: 1; min-width: 220px; max-width: 280px; padding: 20px; background-color: rgba(255, 255, 255, 0.03); border: 1px solid var(--nitro-border-color); border-radius: 10px; text-align: center; display: none; opacity: 0; transition: opacity 0.4s ease, transform 0.3s ease; transform: translateY(10px); }
+        .selected-component-preview.visible { display: block; opacity: 1; transform: translateY(0); }
+        .selected-component-preview img { width: 100%; max-width: 120px; height: auto; margin-bottom: 15px; border-radius: 4px; }
+        .selected-component-preview .preview-name { font-weight: 700; font-size: 1em; margin-bottom: 8px; color: #ffffff; line-height: 1.3; }
+        .selected-component-preview .preview-price { font-size: 1.1em; font-weight: bold; color: var(--nitro-pink); margin-bottom: 10px; }
+        .remove-selection-btn { background: transparent; border: 1.5px solid #dc3545; color: #dc3545; padding: 6px 12px; font-size: 0.85em; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; }
+        .remove-selection-btn:hover { background-color: rgba(220, 53, 69, 0.1); color: #ff4d4d; border-color: #ff4d4d; }
+        .config-summary { border: 1px solid var(--nitro-purple); }
+        #summary-list { list-style: none; padding: 0; margin-bottom: 20px; max-height: 220px; overflow-y: auto; font-size: 0.95em; text-align: left; }
+        #summary-list li { padding: 10px 5px; border-bottom: 1px dashed var(--nitro-border-color); display: flex; justify-content: space-between; align-items: center; }
+        #summary-list li .item-name { flex-grow: 1; }
+        #summary-list li .item-price { font-weight: bold; color: var(--nitro-pink); }
+        #summary-list li .remove-item-btn { background: none; border: none; color: #888; cursor: pointer; font-size: 1.2em; transition: color 0.2s ease, transform 0.2s ease; }
+        #summary-list li .remove-item-btn:hover { color: #ff4d4d; transform: scale(1.1); }
+        #total-price { font-family: 'Orbitron', sans-serif; font-size: 1.8em; font-weight: 900; color: var(--nitro-purple); margin-top: 20px; text-align: right; padding-top: 15px; border-top: 1px solid var(--nitro-border-color); }
+        .config-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap;}
+        .action-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 25px; background: linear-gradient(45deg, var(--nitro-pink), var(--nitro-purple)); color: #ffffff; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1em; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(255, 0, 110, 0.3); border:none; cursor: pointer; }
+        .action-button:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 0, 110, 0.5); }
+        .action-button.save { background: linear-gradient(45deg, var(--nitro-cyan), var(--nitro-blue)); box-shadow: 0 10px 30px rgba(6, 255, 165, 0.3); }
+        .action-button.save:hover { box-shadow: 0 15px 40px rgba(6, 255, 165, 0.5); }
+        .action-button.clear { background: transparent; border: 2px solid var(--nitro-error); color: var(--nitro-error); box-shadow: none; }
+        .action-button.clear:hover { background: rgba(255, 71, 87, 0.1); box-shadow: none; }
+        .compatibility-check-section { border: 1px solid var(--nitro-border-color); }
+        .compatibility-toggle-wrapper { display: flex; align-items: center; gap: 15px; }
+        .ui-switch { display: inline-block; position: relative; cursor: pointer; width: 50px; height: 26px; }
+        .ui-switch input { opacity: 0; width: 0; height: 0; }
+        .ui-switch .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 26px; }
+        .ui-switch .slider .circle { position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .ui-switch input:checked + .slider { background-color: var(--nitro-pink); }
+        .ui-switch input:checked + .slider .circle { transform: translateX(24px); }
+        .compatibility-warnings-area { margin-top: 20px; padding: 15px; background-color: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; border-radius: 8px; }
+        .compatibility-warnings-area h4 { margin: 0 0 10px 0; color: #dc3545; font-family: 'Orbitron', sans-serif; }
+        .compatibility-warnings-area ul { list-style: none; padding-left: 0; margin: 0; }
+        .compatibility-warnings-area ul li { padding: 5px 0; font-size: 0.9em; border-bottom: 1px dashed rgba(220, 53, 69, 0.3); }
+        .compatibility-warnings-area ul li:last-child { border-bottom: none; }
+        .component-description-under-select { font-size: 0.9em; color: #888; margin-top: 15px; min-height: 45px; padding: 8px 10px; background-color: rgba(0,0,0,0.15); border-radius: 6px; border: 1px dashed var(--nitro-border-color); text-align: left; }
+        #toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: var(--nitro-cyan); color: #0a0a0a; padding: 15px 25px; border-radius: 50px; font-weight: 600; z-index: 2000; box-shadow: 0 10px 30px rgba(6, 255, 165, 0.4); opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        #toast-notification.show { opacity: 1; visibility: visible; bottom: 50px; }
+        .load-config-wrapper { display: flex; gap: 10px; align-items: center;}
+    </style>
+</head>
+
+<body id="turbo-config-page">
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+    
+    <header>
+        <div class="header-content">
+            <a href="/" style="text-decoration: none;"><div class="logo">Nitroxyde</div></a>
+            <nav class="nav-links">
+                <a href="/">Accueil</a>
+                <a href="/unavailable">TurboConfig</a>
+                <a href="/#demo">Démo</a>
+                <a href="/contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="presentation">
+            <h2>Créez votre PC sur Mesure</h2>
+            <p>Sélectionnez vos composants étape par étape. Notre outil vérifie la compatibilité en temps réel pour vous garantir une configuration parfaite.</p>
+        </section>
+
+        <section class="compatibility-check-section">
+            <div class="compatibility-toggle-wrapper">
+                <label class="ui-switch" aria-label="Activer la vérification de compatibilité">
+                    <input type="checkbox" id="compatibility-check-toggle" checked>
+                    <div class="slider"><div class="circle"></div></div>
+                </label>
+                <span>Activer le filtre de compatibilité</span>
+            </div>
+            <div id="compatibility-warnings-display" class="compatibility-warnings-area" style="display: none;">
+                <h4><i class="fas fa-exclamation-triangle"></i> Avertissements de compatibilité :</h4>
+                <ul></ul>
+            </div>
+        </section>
+
+        <section class="configurator-section" data-category="cpu">
+            <h2><i class="fas fa-microchip"></i> Processeur (CPU)</h2>
+            <div class="component-selector-area">
+                <div class="component-select-wrapper">
+                    <div class="custom-select-container">
+                        <div class="custom-select-display">-- Sélectionnez un processeur --</div>
+                        <div class="custom-select-options">
+                            <input type="text" class="custom-select-search" placeholder="Filtrer...">
+                        </div>
+                    </div>
+                    <select class="component-select" id="cpu-select">
+                        <option value="" disabled selected data-name="Sélectionnez un CPU" data-price="0" data-image-src="" data-description="Choisissez un processeur pour commencer." data-socket="">-- Sélectionnez un processeur --</option>
+                        <optgroup label="AMD Ryzen 9 (AM5)">
+                            <option value="cpu-amd-9-7950x3d" data-name="AMD Ryzen 9 7950X3D" data-price="650" data-socket="AM5" data-image-src="" data-description="Le roi du gaming grâce à sa technologie 3D V-Cache, 16 coeurs pour une polyvalence totale.">AMD Ryzen 9 7950X3D - 650€</option>
+                            <option value="cpu-amd-9-7950x" data-name="AMD Ryzen 9 7950X" data-price="550" data-socket="AM5" data-image-src="" data-description="16 coeurs bruts pour une productivité maximale en applicatif lourd et création de contenu.">AMD Ryzen 9 7950X - 550€</option>
+                        </optgroup>
+                        <optgroup label="Intel Core i9 (LGA1700)">
+                            <option value="cpu-intel-i9-14900k" data-name="Intel Core i9-14900K" data-price="650" data-socket="LGA1700" data-image-src="" data-description="Le plus puissant de la 14ème génération, 24 coeurs (8P+16E) pour des performances extrêmes.">Intel Core i9-14900K - 650€</option>
+                        </optgroup>
+                    </select>
+                    <div class="component-description-under-select" id="cpu-description-under-select">Description du composant...</div>
+                </div>
+                <div class="selected-component-preview" id="cpu-preview"></div>
+            </div>
+        </section>
+
+        <div class="config-summary">
+            <h3>Votre Configuration</h3>
+            <ul id="summary-list"><li>Votre configuration est vide.</li></ul>
+            <div id="total-price">Total : 0.00 €</div>
+            <div class="config-actions">
+                <div class="load-config-wrapper">
+                    <select class="component-select" id="saved-configs-select" style="min-width: 200px; display: none;"></select>
+                    <button class="action-button" id="load-config-btn" style="display: none;" title="Charger la configuration sélectionnée"><i class="fas fa-folder-open"></i></button>
+                    <button class="action-button clear" id="delete-config-btn" style="display: none;" title="Supprimer la configuration sélectionnée"><i class="fas fa-trash"></i></button>
+                </div>
+                <button class="action-button save" id="save-config-btn"><i class="fas fa-save"></i> Sauvegarder</button>
+                <button class="action-button clear" id="clear-config-btn"><i class="fas fa-times"></i> Vider</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-content">
+        <p>&copy; 2025 Nitroxyde. Tous droits réservés.</p>
+    </footer>
+
+    <div id="toast-notification"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    // Fonction pour l'animation des particules en fond
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        if (!particlesContainer) return;
+        // Créer moins de particules pour de meilleures performances si nécessaire
+        const particleCount = 50; 
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+    createParticles();
+
+    // S'assure que le script du configurateur ne s'exécute que sur la bonne page
+    if (document.body.id === 'turbo-config-page') {
+        const configurator = {
+            selectedComponents: {}, // L'état de la configuration actuelle
+
+            // Initialisation de toutes les fonctionnalités
+            init() {
+                this.initializeCustomSelects();
+                this.addEventListeners();
+                this.loadConfiguration(null, true); // Tente de charger la dernière config sauvegardée au démarrage, sans notification
+            },
+
+            // Mise en place de tous les écouteurs d'événements
+            addEventListeners() {
+                // Pour les sélections de composants (écoute le 'change' sur les selects cachés)
+                document.querySelectorAll('select.component-select').forEach(sel => sel.addEventListener('change', e => this.selectComponent(e.target.options[e.target.selectedIndex])));
+                
+                // Pour tous les boutons "Retirer" (preview et résumé)
+                document.addEventListener('click', e => {
+                    if (e.target && e.target.closest('.remove-selection-btn')) this.removeComponent(e.target.closest('.remove-selection-btn').dataset.category);
+                    if (e.target && e.target.closest('.remove-item-btn')) this.removeComponent(e.target.closest('.remove-item-btn').dataset.category);
+                });
+
+                document.getElementById('compatibility-check-toggle').addEventListener('change', () => this.updateDisplay());
+                
+                // Boutons de gestion de la configuration
+                document.getElementById('save-config-btn').addEventListener('click', () => this.saveConfiguration());
+                document.getElementById('load-config-btn').addEventListener('click', () => this.loadConfiguration(document.getElementById('saved-configs-select').value));
+                document.getElementById('delete-config-btn').addEventListener('click', () => this.deleteConfiguration(document.getElementById('saved-configs-select').value));
+                document.getElementById('clear-config-btn').addEventListener('click', () => this.clearConfiguration());
+            },
+
+            // Logique de sélection d'un composant
+            selectComponent(option) {
+                const category = option.closest('.configurator-section').dataset.category;
+                if (!option.value) { this.removeComponent(category); return; }
+                const data = option.dataset;
+                this.selectedComponents[category] = { 
+                    id: option.value, 
+                    name: data.name, 
+                    price: parseFloat(data.price), 
+                    imageSrc: data.imageSrc, 
+                    description: data.description, 
+                    socket: data.socket, 
+                    ramType: data.ramType 
+                };
+                this.updateDisplay();
+            },
+
+            // Logique de suppression d'un composant
+            removeComponent(category) {
+                this.selectedComponents[category] = null;
+                const select = document.getElementById(`${category}-select`);
+                if (select) select.value = '';
+
+                // Mettre à jour le menu déroulant personnalisé pour afficher le placeholder
+                const customDisplay = document.querySelector(`.custom-select-display[data-category="${category}"]`);
+                if (customDisplay && select) {
+                    customDisplay.textContent = select.options[0].textContent;
+                }
+                this.updateDisplay();
+            },
+
+            // Met à jour toute l'interface (la fonction centrale)
+            updateDisplay() {
+                let total = 0;
+                let hasItems = false;
+                const summaryList = document.getElementById('summary-list');
+                summaryList.innerHTML = '';
+                const categoryOrder = ['cpu', 'motherboard', 'ram', 'gpu', 'storage', 'cooling', 'psu', 'case', 'wifi', 'os'];
+
+                categoryOrder.forEach(cat => {
+                    const item = this.selectedComponents[cat];
+                    this.updatePreview(cat, item);
+                    if (item) {
+                        hasItems = true;
+                        total += item.price;
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span class="item-name">${item.name}</span><span class="item-price">${item.price.toFixed(2)} €</span><button class="remove-item-btn" data-category="${cat}" title="Retirer">×</button>`;
+                        summaryList.appendChild(li);
+                    }
+                });
+
+                if (!hasItems) summaryList.innerHTML = '<li>Votre configuration est vide.</li>';
+                document.getElementById('total-price').textContent = `Total : ${total.toFixed(2)} €`;
+                this.updateCompatibilityDisplay();
+                this.populateLoadMenu();
+            },
+
+            // Met à jour la carte de prévisualisation d'un composant
+            updatePreview(category, item) {
+                const preview = document.getElementById(`${category}-preview`);
+                const descriptionDisplay = document.getElementById(`${category}-description-under-select`);
+                if (!preview) return;
+                if (item) {
+                    preview.innerHTML = `
+                        <img src="${item.imageSrc || ''}" alt="Aperçu ${item.name}" style="display: ${item.imageSrc ? 'block' : 'none'};">
+                        <div class="preview-name">${item.name}</div>
+                        <div class="preview-price">${item.price.toFixed(2)} €</div>
+                        <button class="remove-selection-btn" data-category="${category}">Retirer</button>
+                    `;
+                    preview.classList.add('visible');
+                    if(descriptionDisplay) descriptionDisplay.textContent = item.description;
+                } else {
+                    preview.classList.remove('visible');
+                    if(descriptionDisplay) descriptionDisplay.textContent = document.getElementById(`${category}-select`).options[0].dataset.description;
+                }
+            },
+
+            // Vérifie les compatibilités de base
+            checkCompatibility() {
+                const warnings = [];
+                const { cpu, motherboard, ram } = this.selectedComponents;
+                if (cpu && motherboard && cpu.socket && motherboard.socket && cpu.socket !== motherboard.socket) {
+                    warnings.push(`Socket: CPU (${cpu.socket}) et Carte Mère (${motherboard.socket}) sont incompatibles.`);
+                }
+                if (motherboard && ram && motherboard.ramType && ram.ramType && motherboard.ramType !== ram.ramType) {
+                    warnings.push(`RAM: La Carte Mère (${motherboard.ramType}) et la RAM (${ram.ramType}) sont incompatibles.`);
+                }
+                return warnings;
+            },
+
+            // Affiche les avertissements de compatibilité si nécessaire
+            updateCompatibilityDisplay() {
+                const warnings = this.checkCompatibility();
+                const warningDisplay = document.getElementById('compatibility-warnings-display');
+                const warningList = warningDisplay.querySelector('ul');
+                const isEnabled = document.getElementById('compatibility-check-toggle').checked;
+                
+                warningList.innerHTML = '';
+                if (isEnabled && warnings.length > 0) {
+                    warnings.forEach(msg => {
+                        const li = document.createElement('li');
+                        li.textContent = msg;
+                        warningList.appendChild(li);
+                    });
+                    warningDisplay.style.display = 'block';
+                } else {
+                    warningDisplay.style.display = 'none';
+                }
+            },
+
+            // Récupère les configurations depuis le localStorage
+            getSavedConfigs() {
+                const configs = localStorage.getItem('nitroxydeAllConfigs');
+                return configs ? JSON.parse(configs) : {};
+            },
+
+            // Sauvegarde la configuration actuelle
+            saveConfiguration() {
+                const hasItems = Object.values(this.selectedComponents).some(c => c !== null);
+                if (!hasItems) {
+                    this.showToast('Impossible de sauvegarder une configuration vide.');
+                    return;
+                }
+                const configName = prompt("Entrez un nom pour votre configuration :", "Mon Build Gaming");
+                if (!configName || !configName.trim()) return;
+
+                const configs = this.getSavedConfigs();
+                configs[configName] = this.selectedComponents;
+                localStorage.setItem('nitroxydeAllConfigs', JSON.stringify(configs));
+                this.showToast(`Configuration "${configName}" sauvegardée !`);
+                this.populateLoadMenu();
+            },
+
+            // Charge une configuration depuis le localStorage
+            loadConfiguration(configName, silent = false) {
+                const configs = this.getSavedConfigs();
+                // Si aucun nom n'est fourni, charge la "dernière session" si elle existe
+                if (!configName) {
+                    const lastConfig = localStorage.getItem('nitroxydeLastSession');
+                    if (lastConfig) {
+                        this.selectedComponents = JSON.parse(lastConfig);
+                    } else {
+                        if (!silent) this.showToast('Veuillez sélectionner une configuration à charger.');
+                        return;
+                    }
+                } else if (configs[configName]) {
+                    this.selectedComponents = configs[configName];
+                } else {
+                    if (!silent) this.showToast(`Configuration "${configName}" non trouvée.`);
+                    return;
+                }
+                
+                Object.entries(this.selectedComponents).forEach(([cat, item]) => {
+                    if (item) {
+                        const select = document.getElementById(`${cat}-select`);
+                        if(select) select.value = item.id;
+                    }
+                });
+                
+                if (!silent) this.showToast(`Configuration "${configName || 'Dernière session'}" chargée.`);
+                this.updateDisplay();
+            },
+
+            // Supprime une configuration sauvegardée
+            deleteConfiguration(configName) {
+                if (!configName) { this.showToast('Veuillez sélectionner une configuration à supprimer.'); return; }
+                const configs = this.getSavedConfigs();
+                if (configs[configName] && confirm(`Êtes-vous sûr de vouloir supprimer la configuration "${configName}" ?`)) {
+                    delete configs[configName];
+                    localStorage.setItem('nitroxydeAllConfigs', JSON.stringify(configs));
+                    this.showToast(`Configuration "${configName}" supprimée.`);
+                    this.populateLoadMenu();
+                }
+            },
+
+            // Vide la configuration actuelle
+            clearConfiguration() {
+                if (confirm("Êtes-vous sûr de vouloir vider la configuration actuelle ?")) {
+                    const categoryOrder = ['cpu', 'motherboard', 'ram', 'gpu', 'storage', 'cooling', 'psu', 'case', 'wifi', 'os'];
+                    categoryOrder.forEach(cat => { this.selectedComponents[cat] = null; });
+                    this.showToast('Configuration actuelle vidée.');
+                    this.updateDisplay();
+                    document.querySelectorAll('select.component-select').forEach(sel => sel.value = '');
+                }
+            },
+
+            // Met à jour le menu déroulant des configurations sauvegardées
+            populateLoadMenu() {
+                const configs = this.getSavedConfigs();
+                const configNames = Object.keys(configs);
+                const select = document.getElementById('saved-configs-select');
+                const loadBtn = document.getElementById('load-config-btn');
+                const deleteBtn = document.getElementById('delete-config-btn');
+                
+                select.innerHTML = '';
+
+                if (configNames.length > 0) {
+                    configNames.forEach(name => {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = name;
+                        select.appendChild(option);
+                    });
+                    select.style.display = 'inline-block';
+                    loadBtn.style.display = 'inline-flex';
+                    deleteBtn.style.display = 'inline-flex';
+                } else {
+                    select.style.display = 'none';
+                    loadBtn.style.display = 'none';
+                    deleteBtn.style.display = 'none';
+                }
+            },
+
+            // Affiche une notification temporaire
+            showToast(message) {
+                const toast = document.getElementById('toast-notification');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            },
+            
+            // Logique pour les menus déroulants personnalisés
+            initializeCustomSelects() {
+                document.querySelectorAll('.custom-select-container').forEach(container => {
+                    const select = container.nextElementSibling;
+                    const display = container.querySelector('.custom-select-display');
+                    const optionsContainer = container.querySelector('.custom-select-options');
+                    const searchInput = optionsContainer.querySelector('.custom-select-search');
+                    
+                    // Peuple le menu personnalisé avec les options du select caché
+                    Array.from(select.children).forEach(child => {
+                        if (child.tagName.toLowerCase() === 'optgroup') {
+                            const optgroupLabel = document.createElement('div');
+                            optgroupLabel.className = 'custom-select-optgroup';
+                            optgroupLabel.textContent = child.label;
+                            optionsContainer.appendChild(optgroupLabel);
+                            Array.from(child.children).forEach(option => this.createCustomOption(option, optionsContainer, display, select, container));
+                        } else {
+                            this.createCustomOption(child, optionsContainer, display, select, container);
+                        }
+                    });
+
+                    display.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const currentlyOpen = container.classList.contains('open');
+                        document.querySelectorAll('.custom-select-container.open').forEach(c => c.classList.remove('open'));
+                        if (!currentlyOpen) container.classList.add('open');
+                    });
+
+                    searchInput.addEventListener('input', () => {
+                        const filter = searchInput.value.toLowerCase();
+                        optionsContainer.querySelectorAll('.custom-select-option').forEach(optionDiv => {
+                            optionDiv.classList.toggle('hidden', !optionDiv.textContent.toLowerCase().includes(filter));
+                        });
+                    });
+                });
+
+                document.addEventListener('click', () => {
+                     document.querySelectorAll('.custom-select-container.open').forEach(c => c.classList.remove('open'));
+                });
+            },
+
+            createCustomOption(option, optionsContainer, display, select, container) {
+                if (option.disabled) return; // Ne pas créer d'option pour le placeholder
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'custom-select-option';
+                optionDiv.textContent = option.textContent.trim();
+                optionDiv.dataset.value = option.value;
+                optionsContainer.appendChild(optionDiv);
+                
+                optionDiv.addEventListener('click', () => {
+                    display.textContent = option.textContent.trim();
+                    select.value = option.value;
+                    select.dispatchEvent(new Event('change')); // CRUCIAL : Déclenche la logique du configurateur
+                    container.classList.remove('open');
+                });
+            }
+        };
+
+        configurator.init();
+    }
+});
+    </script>
+</body>
+</html>
