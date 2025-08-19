@@ -5,7 +5,7 @@ document.getElementById('submitButton').addEventListener('click', async () => {
 
     resultBox.textContent = 'Réflexion en cours...';
 
-    const response = await fetch('/api/reformulate', {
+    const response = await fetch('reformulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, tone })
