@@ -29,7 +29,7 @@ export default async function handler(request, response) {
         if (!groqResponse.ok) {
             const errorBody = await groqResponse.text();
             console.error('Erreur de l\'API Groq:', errorBody);
-            return response.status(groqResponse.status).json({ error: 'L\'API de reformulation a retourné une erreur.' });
+            return response.status(groqResponse.status).json({ error: 'L\'Erreur inconnu' });
         }
 
         const data = await groqResponse.json();
