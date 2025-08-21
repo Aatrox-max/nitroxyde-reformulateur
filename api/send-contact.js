@@ -12,8 +12,8 @@ export default async function handler(request, response) {
 
     try {
         const { data, error } = await resend.emails.send({
-            from: 'Contact Nitroxyde <contact@nitroxyde.fr>',
-            to: ['aarondenoeux@gmail.com'],
+            from: 'Contact Nitroxyde <support@nitroxyde.fr>',
+            to: ['support@nitroxyde.fr'],
             subject: `Nouveau message de ${name} : ${subject}`,
             html: `
                 <p>Vous avez reçu un nouveau message depuis le formulaire de contact de nitroxyde.fr.</p>
