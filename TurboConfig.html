@@ -462,7 +462,7 @@
     <div id="toast-notification"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+       document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour l'animation des particules en fond
     function createParticles() {
         const particlesContainer = document.getElementById('particles');
@@ -735,6 +735,11 @@
                     const display = container.querySelector('.custom-select-display');
                     const optionsContainer = container.querySelector('.custom-select-options');
                     const searchInput = container.querySelector('.custom-select-search');
+
+                    // --- Correction : empêcher la fermeture du menu lors du clic sur le champ de recherche ---
+                    searchInput.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
 
                     Array.from(originalSelect.children).forEach(child => {
                         if (child.tagName === 'OPTGROUP') {
